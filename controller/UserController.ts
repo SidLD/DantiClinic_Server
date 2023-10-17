@@ -16,7 +16,8 @@ export const preRegister = async (req:any, res:any) => {
             const dbUser = new UserSchema({
                 email: params.email,
                 mobile: params.mobile,
-                role: params.role
+                role: params.role,
+                status: 'pending'
             });
             try {
                 const data = await dbUser.save();
@@ -31,6 +32,7 @@ export const preRegister = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
+
 export const register = async (req: any, res: any) => {
     try {
         let params:IUser = req.body
@@ -107,6 +109,20 @@ export const login = async (req: any, res: any) => {
             }
         }else{
             res.status(400).send({message:"Incorrect Email or Password" })
+        }
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
+
+export const getUserRegisterPending = async (req: any, res: any) => {
+    try {
+        if(req.user.role == 'admin'){
+            const users:Array<IUser> = await UserSchema.where({status: 'pending'})
+            res.status(200).send({data:users})
+        }else{
+            res.status(400).send({message:"Access Denied"})
         }
     } catch (error: any) {
         console.log(error.message)

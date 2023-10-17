@@ -18,6 +18,7 @@ export interface IUser {
         country: String,
     },
     role: 'admin' | 'patient' | 'doctor',
+    status: 'pending' | 'approve',
 }
 
 export interface Iappointment {

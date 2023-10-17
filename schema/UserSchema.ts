@@ -33,6 +33,13 @@ const userSchema = new Schema<IUser>(
       index: true,
       enum: ["admin", "doctor", "patient"],
     },
+    status: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true,
+      enum: ["pending", "approved"],
+    }
   },
   {
     timestamps: true,
