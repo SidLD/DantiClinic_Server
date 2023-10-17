@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import userAPI from './api/UserAPI';
+import mongoose from 'mongoose';
 
 //For env File 
 dotenv.config();
@@ -32,6 +33,15 @@ app.put('*', (req:Request, res:Response) => {
 app.delete('*', (req:Request, res:Response) => {
   res.status(404).send({message: "URI not FOUND"})
 })
+
+//Database
+try {
+  mongoose.set("strictQuery", false);
+  mongoose.connect(`${process.env.ATLAS_URI}`);
+  console.log(`Connected to Database ${`${process.env.ATLAS_URI}`}`)
+} catch (error) {
+  console.log(error)
+}
 
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);

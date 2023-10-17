@@ -3,29 +3,35 @@ import { IUser } from "../util/interface";
 
 const userSchema = new Schema<IUser>(
   {
-    firstName: {
-      type: String,
-      required: true,
+    username: {
+      firstName:String,
+      lastName:String,
+      middleName: String,
     },
-    lastName: {
-      type: String,
-      require: true,
+    password: String,
+    email: String,
+    mobile: String,
+    birthdate:{
+      city: String,
+      province: String,
+      country: String,
     },
-    middleName: String,
-    password: {
+    age: Number,
+    gender: {
       type: String,
-      required: true,
+      enum: ['male', 'female']
     },
-    email: {
-      type: String,
-      required: true
+    address: {
+      city: String,
+      province: String,
+      country: String,
     },
     role: {
       type: String,
       required: true,
       trim: true,
       index: true,
-      enum: ["admin", "user"],
+      enum: ["admin", "doctor", "patient"],
     },
   },
   {
@@ -33,4 +39,4 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-export default model("User", userSchema);
+export default model<IUser>("User", userSchema);
