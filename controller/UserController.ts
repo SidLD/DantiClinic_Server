@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import UserSchema from '../schema/UserSchema'
 import { IUser } from '../util/interface'
 import mongoose from 'mongoose'
+import { link } from 'fs'
 
 export const preRegister = async (req:any, res:any) => {
     try {
@@ -21,7 +22,7 @@ export const preRegister = async (req:any, res:any) => {
             });
             try {
                 const data = await dbUser.save();
-                res.status(200).send({data})
+                res.status(200).send({link: `${process.env.FRONT_URI}/register/${data._id}`})
             } catch (error: any) {
                 res.status(400).send({message: error.message})
             }
@@ -32,7 +33,27 @@ export const preRegister = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
+export const getPreRegister = async (req:any, res:any) => {
+    try {
+        let params = req.query
+        const user:{
+            email: string,
+            mobile: string,
+            role: string,
+            status: string
+        
+        } | null = await UserSchema.findOne({ _id: new mongoose.Types.ObjectId(params._id) })
+        if(user){
+            res.status(200).send({data:user})
+        }else{
+            res.status(400).send({message: "User does not Exist"})
+        }
 
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
 export const register = async (req: any, res: any) => {
     try {
         let params:IUser = req.body
@@ -109,20 +130,6 @@ export const login = async (req: any, res: any) => {
             }
         }else{
             res.status(400).send({message:"Incorrect Email or Password" })
-        }
-    } catch (error: any) {
-        console.log(error.message)
-        res.status(400).send({message:"Invalid Data or Email Already Taken"})
-    }
-}
-
-export const getUserRegisterPending = async (req: any, res: any) => {
-    try {
-        if(req.user.role == 'admin'){
-            const users:Array<IUser> = await UserSchema.where({status: 'pending'})
-            res.status(200).send({data:users})
-        }else{
-            res.status(400).send({message:"Access Denied"})
         }
     } catch (error: any) {
         console.log(error.message)

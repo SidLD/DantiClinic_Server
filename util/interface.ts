@@ -15,7 +15,6 @@ export interface IUser {
     address: {
         city: String,
         province: String,
-        country: String,
     },
     role: 'admin' | 'patient' | 'doctor',
     status: 'pending' | 'approve',
