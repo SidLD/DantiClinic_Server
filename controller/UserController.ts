@@ -18,6 +18,7 @@ export const preRegister = async (req:any, res:any) => {
                 email: params.email,
                 mobile: params.mobile,
                 role: params.role,
+                username: params.username,
                 status: 'pending'
             });
             try {
@@ -27,7 +28,6 @@ export const preRegister = async (req:any, res:any) => {
                 res.status(400).send({message: error.message})
             }
         }
-
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
@@ -40,7 +40,7 @@ export const getPreRegister = async (req:any, res:any) => {
             email: string,
             mobile: string,
             role: string,
-            status: string
+            status: string,
         
         } | null = await UserSchema.findOne({ _id: new mongoose.Types.ObjectId(params._id) })
         if(user){
@@ -57,42 +57,47 @@ export const getPreRegister = async (req:any, res:any) => {
 export const register = async (req: any, res: any) => {
     try {
         let params:IUser = req.body
-        //To avoid duplication I manually called email and username
-        //If email or username is found, there should be an ID in the params, otherwise its an illegal query
-        const email = await UserSchema.findOne({ email: params.email })
-        const username = await UserSchema.findOne({ 
-            'username.firstName': params?.username?.firstName, 
-            'username.lastName': params?.username?.lastName
-        })
-        if(!email || !username){
-            if(params._id){
-                const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
-                let newUser : any = await UserSchema.find({_id: new mongoose.Types.ObjectId(params._id.toString())})
-                .updateOne({}, {
-                    address : params.address,
-                    age : params.age,
-                    password : hashedPassword,
-                    birthdate : params.birthdate,
-                    username : params.username,
-                    role : params.role
-                })
-                res.status(200).send({newUser})
-            }else{
-                const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
-                let newUser : any = await UserSchema.create({
-                    email: params.email,
-                    address : params.address,
-                    age : params.age,
-                    password : hashedPassword,
-                    birthdate : params.birthdate,
-                    mobile : params.mobile,
-                    username : params.username,
-                    role : params.role
-                })
-                res.status(200).send({newUser})
-            }
+        if(params?._id){
+            const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
+                const newUser :any = await UserSchema.findOneAndUpdate(
+                    {_id: new mongoose.Types.ObjectId(params._id?.toString())},
+                    {email: params.email,
+                        address : params.address,
+                        age : params.age,
+                        password : hashedPassword,
+                        birthdate : params.birthdate,
+                        mobile : params.mobile,
+                        username : params.username,
+                        role : params.role,
+                        status: "approve"}
+                )
+             res.status(200).send({newUser})
         }else{
-            res.status(400).send({message:"User Already Exist"})
+            if(req.user.role === "admin"){
+                const email: null | any = await UserSchema.findOne({ email: params.email })
+                const mobile:  null | any = await UserSchema.findOne({ mobile: params.mobile })
+                console.log(email)
+                if(email || mobile){
+                    res.status(400).send({message:"User Already Exist"})
+                }else{
+                    const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
+                    const newUser = new UserSchema({
+                        email: params.email,
+                        address : params.address,
+                        age : params.age,
+                        password : hashedPassword,
+                        birthdate : params.birthdate,
+                        mobile : params.mobile,
+                        username : params.username,
+                        role : params.role,
+                        status: "approve"
+                    });
+                    const data = await newUser.save()
+                    res.status(200).send({data})
+                }
+            }else{
+                res.status(400).send({message:"Please Pre Register First"})
+            }
         }
 
     } catch (error: any) {

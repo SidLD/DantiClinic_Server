@@ -8,7 +8,7 @@ const apiVersion = process.env.API_VERSION;
 
 userAPI.post(`/${apiVersion}/pre-register`, preRegister);
 userAPI.get(`/${apiVersion}/pre-register`, getPreRegister);
-userAPI.post(`/${apiVersion}/register`, register);
+userAPI.post(`/${apiVersion}/register`, verifyToken ,register);
 userAPI.post(`/${apiVersion}/login`, login);
 
 

@@ -22,9 +22,14 @@ const userSchema = new Schema<IUser>(
       enum: ['male', 'female']
     },
     address: {
-      city: String,
-      province: String,
-      country: String,
+      city: {
+        code:String,
+        label:String
+      },
+      province:  {
+        code:String,
+        label:String
+      },
     },
     role: {
       type: String,
@@ -38,7 +43,7 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
       index: true,
-      enum: ["pending", "approved"],
+      enum: ["pending", "approve"],
     }
   },
   {

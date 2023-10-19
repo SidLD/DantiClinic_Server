@@ -13,8 +13,14 @@ export interface IUser {
     age: Number,
     gender: 'male' | 'female',
     address: {
-        city: String,
-        province: String,
+        city: {
+            code: string,
+            label:String
+        },
+        province: {
+            code: string,
+            label:String
+        },
     },
     role: 'admin' | 'patient' | 'doctor',
     status: 'pending' | 'approve',
