@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import userAPI from './api/UserAPI';
 import mongoose from 'mongoose';
+import appointmentAPI from './api/AppointmentAPI';
 
 //For env File 
 dotenv.config();
@@ -19,6 +20,7 @@ app.use(cors(corsOptions));
 
 //START of API
 app.use(userAPI)
+app.use(appointmentAPI)
 //END of API
 
 app.post('*', (req:Request, res:Response) => {

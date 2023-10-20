@@ -19,7 +19,7 @@ export const preRegister = async (req:any, res:any) => {
                 mobile: params.mobile,
                 role: params.role,
                 username: params.username,
-                status: 'pending'
+                status: 'available'
             });
             try {
                 const data = await dbUser.save();
@@ -69,7 +69,7 @@ export const register = async (req: any, res: any) => {
                         mobile : params.mobile,
                         username : params.username,
                         role : params.role,
-                        status: "approve"}
+                        status: "available"}
                 )
              res.status(200).send({newUser})
         }else{
@@ -90,7 +90,7 @@ export const register = async (req: any, res: any) => {
                         mobile : params.mobile,
                         username : params.username,
                         role : params.role,
-                        status: "approve"
+                        status: "available"
                     });
                     const data = await newUser.save()
                     res.status(200).send({data})
@@ -105,7 +105,6 @@ export const register = async (req: any, res: any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
-
 export const login = async (req: any, res: any) => {
     try {
         let params:any = req.body
@@ -136,6 +135,35 @@ export const login = async (req: any, res: any) => {
         }else{
             res.status(400).send({message:"Incorrect Email or Password" })
         }
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
+export const getUsers = async (req:any, res:any) => {
+    try {
+        let params = req.query
+        const users: IUser[] = await UserSchema.where({
+            $or: [
+                {$and : [
+                    {role: params.role},
+                    {'username.firstName': params.search}
+                ]},
+                {$and : [
+                    {role: params.role},
+                    {'username.lastName': params.search}
+                ]},
+                {$and : [
+                    {role: params.role},
+                    {'username.email': params.search}
+                ]},
+            ]
+        })
+        .sort(params.sort)
+        .limit(params.limit)
+        .select('_id username email contact role')
+        console.log(users)
+        res.status(200).send({data:users})
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Invalid Data or Email Already Taken"})

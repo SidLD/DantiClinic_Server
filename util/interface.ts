@@ -23,7 +23,28 @@ export interface IUser {
         },
     },
     role: 'admin' | 'patient' | 'doctor',
-    status: 'pending' | 'approve',
+    status: 'available' | 'unavailable',
+}
+
+export interface Ilog {
+    user: IUser,
+    detail: String,
+    createdAt: Date,
+    updatedAt: Date,
+}
+
+export interface Iappointment {
+    _id: String | undefined,
+    title: string
+    user?: IUser
+    doctor: IUser
+    date: Date
+    status: 'forAdmin' | 'forDoctor' | 'approve' 
+    findings?: {
+        detail: string,
+        date: Date
+    }
+    log: Array<Ilog>
 }
 
 export interface Iappointment {
