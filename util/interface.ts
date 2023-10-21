@@ -36,19 +36,13 @@ export interface Ilog {
 export interface Iappointment {
     _id: String | undefined,
     title: string
-    user?: IUser
+    patient: IUser
     doctor: IUser
     date: Date
-    status: 'forAdmin' | 'forDoctor' | 'approve' 
+    status: 'forAdmin' | 'forDoctor' | 'approve' | 'reject'
     findings?: {
         detail: string,
         date: Date
     }
     log: Array<Ilog>
-}
-
-export interface Iappointment {
-    _id: String | undefined,
-    patient: IUser,
-    doctor: IUser
 }

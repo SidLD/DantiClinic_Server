@@ -109,6 +109,7 @@ export const login = async (req: any, res: any) => {
     try {
         let params:any = req.body
         const user:IUser | null = await UserSchema.findOne({ email: params.email })
+        console.log(user)
         if(user){
             const isMatch = await bcrypt.compare(params.password, user.password.toString())
             if(isMatch){
