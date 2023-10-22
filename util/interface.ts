@@ -7,6 +7,7 @@ export interface IUser {
         middleName?: String,
         lastName: String,
     },
+    appointments: Array<Iappointment>,
     email: String,
     password: String,
     mobile: String,

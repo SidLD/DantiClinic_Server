@@ -5,6 +5,7 @@ import { IUser, Iappointment } from '../util/interface'
 import mongoose from 'mongoose'
 import { link } from 'fs'
 import AppointmentSchema from '../schema/AppointmentSchema'
+import { log } from 'console'
 
 export const createAppointment = async (req:any, res:any) => {
     try {
@@ -37,10 +38,10 @@ export const createAppointment = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
-
 export const getAppointment = async (req:any, res:any) => {
     try {
         const params = req.query
+        
         if(req.user.role === 'patient'){
             const appointments: Array<Iappointment> = await AppointmentSchema.where({
                 $or: [
@@ -52,6 +53,7 @@ export const getAppointment = async (req:any, res:any) => {
                     {'doctor.username.email': params.search},
                     {'title':  { $regex: '.*' + params.search + '.*' }},
                 ],
+                status: {$ne : 'complete'},
                 patient: new mongoose.Types.ObjectId(req.user.id)
             })
             .sort(params.sort)
@@ -59,7 +61,7 @@ export const getAppointment = async (req:any, res:any) => {
             .populate('patient', 'username _id status mobile email')
             .populate('doctor', 'username _id status mobile email')
             res.status(200).send({data:appointments})
-        }else if(req.user.doctor){
+        }else if(req.user.role == 'doctor'){
             const appointments: Array<Iappointment> = await AppointmentSchema.where({
                 $or: [
                     {'patient.username.firstName': params.search},
@@ -70,12 +72,14 @@ export const getAppointment = async (req:any, res:any) => {
                     {'doctor.username.email': params.search},
                     {'title': { $regex: '.*' + params.search + '.*' }},
                 ],
+                status: {$ne : 'complete'},
                 doctor: new mongoose.Types.ObjectId(req.user.id)
             })
             .sort(params.sort)
             .limit(params.limit)
             .populate('patient', 'username _id status mobile email')
             .populate('doctor', 'username _id status mobile email')
+            
             res.status(200).send({data:appointments})
         }else{
             const appointments: Array<Iappointment> = await AppointmentSchema.where({
@@ -87,7 +91,9 @@ export const getAppointment = async (req:any, res:any) => {
                     {'doctor.username.lastName': params.search},
                     {'doctor.username.email': params.search},
                     {'title': { $regex: '.*' + params.search + '.*' }},
-                ]
+                ],
+                
+                status: {$ne : 'complete'},
             })
             .sort(params.sort)
             .limit(params.limit)
@@ -100,7 +106,6 @@ export const getAppointment = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
-
 export const updateAppointment = async (req:any, res:any) => {
     try {
         const params = req.body
@@ -149,5 +154,57 @@ export const rejectAppointment = async (req:any, res:any) => {
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
+export const completeAppointment = async (req:any, res:any) => {
+    try {
+        const params = req.body
+        const result: any | null = 
+            await AppointmentSchema.findOneAndUpdate(
+                {_id: new mongoose.Types.ObjectId(params._id)},
+                {
+                    findings : params.findings,
+                    status: 'complete'
+                }
+            )
+        res.status(200).send({data: result})
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
+export const getRecords = async (req:any, res:any) => {
+    try {
+        const params = req.query
+        if(params.option === 'user'){
+            const users: Array<IUser> = await UserSchema.where({
+                $or: [
+                    {'username.firstName': params.search},
+                    {'username.lastName': params.search},
+                    {'username.email': params.search},
+                    {'username.firstName': params.search},
+                    {'username.lastName': params.search},
+                    {'username.email': params.search},
+                ],
+                role: 'patient',
+            })
+            .sort(params.sort)
+            .limit(params.limit)
+            .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
+            res.status(200).send({data:users})
+        }else{
+            const appointments: Array<Iappointment> = await AppointmentSchema.where({
+                title:  { $regex: '.*' + params.search + '.*' },
+                status: 'complete',
+            })
+            .sort(params.sort)
+            .limit(params.limit)
+            .populate('patient', 'username _id status mobile email')
+            .populate('doctor', 'username _id status mobile email')
+            res.status(200).send({data:appointments})
+        }
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Server Error"})
     }
 }
