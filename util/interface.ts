@@ -1,6 +1,7 @@
 
 export interface IUser {
     _id: String | undefined,
+    profile: Iimg,
     username:{
         firstName: String,
         middleName?: String,
@@ -45,4 +46,13 @@ export interface Iappointment {
         date: Date
     }
     log: Array<Ilog>
+}
+
+export interface Iimg {
+    _id: String | undefined,
+    user: IUser,
+    path: string,
+    name: string,
+    imageType: string
+    fullPath: string
 }

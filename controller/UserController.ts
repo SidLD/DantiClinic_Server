@@ -176,7 +176,7 @@ export const getUsers = async (req:any, res:any) => {
 export const getUserData = async (req:any, res:any) => {
     try {
         let params = req.query
-        const user: IUser | null = await UserSchema.findOne({_id: params._id})
+        const user: IUser | null = await UserSchema.findOne({_id: params._id}).populate('profile')
         const appointments: Array<Iappointment> = await AppointmentSchema.where({
             patient: new mongoose.Types.ObjectId(user?._id?.toString())
         })
@@ -223,6 +223,28 @@ export const updatePassword = async (req: any, res: any) => {
         }else{
             res.status(400).send({message:"Password Does not Match"})
         }
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Password Does not Match"})
+    }
+}
+export const uploadProfile = async (req: any, res: any) => {
+    try {
+        let params:any = req.body
+        const {name, fullPath, contentType} = params.metadata
+        const  {path_} = params.ref._location
+        const response = await UserSchema.findOneAndUpdate(
+            {_id: new mongoose.Types.ObjectId(req.user.id)},
+            {
+                profile: {
+                    name: name,
+                    path: path_,
+                    fullPath: fullPath,
+                    imageType: contentType
+                }
+            }
+        )
+        res.status(200).send({message:"Success"})
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Password Does not Match"})

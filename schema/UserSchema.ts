@@ -1,5 +1,20 @@
-import { Schema, model } from "mongoose";
-import { IUser } from "../util/interface";
+import mongoose, { Schema, model } from "mongoose";
+import { IUser, Iimg } from "../util/interface";
+
+const profileSchema = new Schema<Iimg>(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    imageType: String,
+    path: String,
+    name: String,
+    fullPath: String
+  },
+  { timestamps: true }
+);
+
 
 const userSchema = new Schema<IUser>(
   {
@@ -44,7 +59,8 @@ const userSchema = new Schema<IUser>(
       trim: true,
       index: true,
       enum: ["pending", "approve"],
-    }
+    },
+    profile: profileSchema,
   },
   {
     timestamps: true,

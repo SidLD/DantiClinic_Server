@@ -125,7 +125,6 @@ export const updateAppointment = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
-
 export const deleteAppointment = async (req:any, res:any) => {
     try {
         const params = req.body

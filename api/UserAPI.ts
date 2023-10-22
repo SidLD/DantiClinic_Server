@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import { login, preRegister, register , getPreRegister, getUsers, getUserData, updateUser, updatePassword} from '../controller/UserController';
+import { login, preRegister, register , getPreRegister, getUsers, getUserData, updateUser, updatePassword, uploadProfile} from '../controller/UserController';
 import { verifyToken } from '../util/verify';
 dotenv.config()
 const userAPI = express()
@@ -13,6 +13,7 @@ userAPI.get(`/${apiVersion}/user-data`, verifyToken, getUserData)
 userAPI.post(`/${apiVersion}/register`, verifyToken ,register);
 userAPI.put(`/${apiVersion}/users`, verifyToken ,updateUser);
 userAPI.put(`/${apiVersion}/user-password`, verifyToken ,updatePassword);
+userAPI.put(`/${apiVersion}/user-profile`, verifyToken , uploadProfile);
 userAPI.post(`/${apiVersion}/login`, login);
 
 
