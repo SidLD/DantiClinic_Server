@@ -250,3 +250,21 @@ export const uploadProfile = async (req: any, res: any) => {
         res.status(400).send({message:"Password Does not Match"})
     }
 }
+export const getUserRecord = async (req:any, res:any) => {
+    try {
+        const params = req.query
+        const userData: IUser  = await UserSchema.findOne({_id: new mongoose.Types.ObjectId(params._id)})
+        .sort(params.sort)
+        .limit(params.limit)
+        .select(['_id', 'username', 'role', 'email', 'mobile', 'status', 'address', 'gender', 'birthdate', 'profile'])
+        const appointments : Array<Iappointment> = await AppointmentSchema.where({
+            patient: userData?._id,
+            status: 'complete'
+        })
+        .populate('doctor' , '_id username mobile email')
+        res.status(200).send({data:{user: userData, appointments}})
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Server Error"})
+    }
+}

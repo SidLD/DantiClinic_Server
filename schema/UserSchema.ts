@@ -60,6 +60,12 @@ const userSchema = new Schema<IUser>(
       index: true,
       enum: ["pending", "approve"],
     },
+    appointments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Appointment",
+      }
+    ],
     profile: profileSchema,
   },
   {
