@@ -58,7 +58,7 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
       index: true,
-      enum: ["pending", "approve"],
+      enum: ["pending", "approve", 'available', 'unavailable'],
     },
     appointments: [
       {

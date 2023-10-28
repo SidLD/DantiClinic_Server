@@ -53,7 +53,6 @@ export const getAppointment = async (req:any, res:any) => {
                     {'doctor.username.email': params.search},
                     {'title':  { $regex: '.*' + params.search + '.*' }},
                 ],
-                status: {$ne : 'complete'},
                 patient: new mongoose.Types.ObjectId(req.user.id)
             })
             .sort(params.sort)
@@ -92,7 +91,6 @@ export const getAppointment = async (req:any, res:any) => {
                     {'doctor.username.email': params.search},
                     {'title': { $regex: '.*' + params.search + '.*' }},
                 ],
-                
                 status: {$ne : 'complete'},
             })
             .sort(params.sort)
@@ -176,33 +174,21 @@ export const completeAppointment = async (req:any, res:any) => {
 export const getRecords = async (req:any, res:any) => {
     try {
         const params = req.query
-        if(params.option === 'user'){
-            const users: Array<IUser> = await UserSchema.where({
-                $or: [
-                    {'username.firstName': params.search},
-                    {'username.lastName': params.search},
-                    {'username.email': params.search},
-                    {'username.firstName': params.search},
-                    {'username.lastName': params.search},
-                    {'username.email': params.search},
-                ],
-                role: 'patient',
-            })
-            .sort(params.sort)
-            .limit(params.limit)
-            .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
-            res.status(200).send({data:users})
-        }else{
-            const appointments: Array<Iappointment> = await AppointmentSchema.where({
-                title:  { $regex: '.*' + params.search + '.*' },
-                status: 'complete',
-            })
-            .sort(params.sort)
-            .limit(params.limit)
-            .populate('patient', 'username _id status mobile email')
-            .populate('doctor', 'username _id status mobile email')
-            res.status(200).send({data:appointments})
-        }
+        const users: Array<IUser> = await UserSchema.where({
+            $or: [
+                {'username.firstName': params.search},
+                {'username.lastName': params.search},
+                {'username.email': params.search},
+                {'username.firstName': params.search},
+                {'username.lastName': params.search},
+                {'username.email': params.search},
+            ],
+            role: 'patient',
+        })
+        .sort(params.sort)
+        .limit(params.limit)
+        .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
+        res.status(200).send({data:users})
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Invalid Data or Server Error"})

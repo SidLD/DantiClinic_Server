@@ -5,6 +5,7 @@ import cors from 'cors'
 import userAPI from './api/UserAPI';
 import mongoose from 'mongoose';
 import appointmentAPI from './api/AppointmentAPI';
+import analysisAPI from './api/AnalysisAPI';
 
 //For env File 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cors(corsOptions));
 //START of API
 app.use(userAPI)
 app.use(appointmentAPI)
+app.use(analysisAPI)
 //END of API
 
 app.post('*', (req:Request, res:Response) => {
