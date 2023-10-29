@@ -2,6 +2,7 @@
 export interface IUser {
     _id: String | undefined,
     profile: Iimg,
+    specialty?:string,
     username:{
         firstName: String,
         middleName?: String,

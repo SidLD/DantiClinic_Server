@@ -93,6 +93,7 @@ export const register = async (req: any, res: any) => {
                         mobile : params.mobile,
                         username : params.username,
                         role : params.role,
+                        specialty: params?.specialty || "",
                         status: "available"
                     });
                     const data = await newUser.save()
@@ -263,6 +264,20 @@ export const getUserRecord = async (req:any, res:any) => {
         })
         .populate('doctor' , '_id username mobile email')
         res.status(200).send({data:{user: userData, appointments}})
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Server Error"})
+    }
+}
+
+export const getDoctorIntro = async (req:any, res:any) => {
+    try {
+        const doctors: Array<any> = await UserSchema.where({
+            role: 'doctor'
+        })
+        .populate('profile')
+        .select('username _id gender specialty')
+        res.status(200).send({data:doctors})
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Invalid Data or Server Error"})

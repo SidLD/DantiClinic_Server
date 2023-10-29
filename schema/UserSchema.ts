@@ -31,6 +31,7 @@ const userSchema = new Schema<IUser>(
       province: String,
       country: String,
     },
+    specialty: String,
     age: Number,
     gender: {
       type: String,
