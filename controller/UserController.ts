@@ -200,7 +200,7 @@ export const updateUser = async (req: any, res: any) => {
                 mobile : params.mobile,
                 username : params.username,
                 gender: params.gender,
-                status: "available"
+                status: params.status
             }
         )
         res.status(200).send({newUser})

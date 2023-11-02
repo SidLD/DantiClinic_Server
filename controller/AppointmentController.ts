@@ -174,21 +174,31 @@ export const completeAppointment = async (req:any, res:any) => {
 export const getRecords = async (req:any, res:any) => {
     try {
         const params = req.query
-        const users: Array<IUser> = await UserSchema.where({
-            $or: [
-                {'username.firstName': params.search},
-                {'username.lastName': params.search},
-                {'username.email': params.search},
-                {'username.firstName': params.search},
-                {'username.lastName': params.search},
-                {'username.email': params.search},
-            ],
-            role: 'patient',
-        })
-        .sort(params.sort)
-        .limit(params.limit)
-        .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
-        res.status(200).send({data:users})
+        if(req.user.role == 'patient'){
+            const users: Array<IUser> = await UserSchema.where({
+                _id: new mongoose.Types.ObjectId(req.user.id)
+            })
+            .sort(params.sort)
+            .limit(params.limit)
+            .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
+            res.status(200).send({data:users})
+        }else{
+            const users: Array<IUser> = await UserSchema.find({
+                $or: [
+                    {'username.firstName':   { '$regex' : params.search, '$options' : 'i' }},
+                    {'username.lastName':    { '$regex' : params.search, '$options' : 'i' }},
+                    {'username.email':       { '$regex' : params.search, '$options' : 'i' }},
+                    {'username.firstName':   { '$regex' : params.search, '$options' : 'i' }},
+                    {'username.lastName':    { '$regex' : params.search, '$options' : 'i' }},
+                    {'email':                { '$regex' : params.search, '$options' : 'i' }},
+                ],
+                role: 'patient',
+            })
+            .sort(params.sort)
+            .limit(params.limit)
+            .select(['_id', 'username', 'role', 'email', 'mobile', 'status']) 
+            res.status(200).send({data:users})
+        }
     } catch (error: any) {
         console.log(error.message)
         res.status(400).send({message:"Invalid Data or Server Error"})
