@@ -273,7 +273,8 @@ export const getUserRecord = async (req:any, res:any) => {
 export const getDoctorIntro = async (req:any, res:any) => {
     try {
         const doctors: Array<any> = await UserSchema.where({
-            role: 'doctor'
+            role: 'doctor',
+            status: 'available'
         })
         .populate('profile')
         .select('username _id gender specialty')
