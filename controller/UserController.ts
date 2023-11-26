@@ -120,7 +120,9 @@ export const login = async (req: any, res: any) => {
                 const payload = {
                     id: user._id,
                     role: user.role,
-                    gender: user.gender
+                    gender: user.gender,
+                    firstName: user.username.firstName,
+                    lastName: user.username.lastName
                 };
                 jwt.sign(
                     payload,

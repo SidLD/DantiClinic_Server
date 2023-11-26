@@ -104,6 +104,21 @@ export const getAppointment = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
+
+export const getOneAppointment = async (req: any, res: any) => {
+    try {
+        const params = req.query
+        const appointment: Iappointment | null = await AppointmentSchema.findOne({
+            _id: new mongoose.Types.ObjectId(params.appointmentId)
+        })
+        .populate('patient', 'username _id status mobile email  address gender contact birthdate')
+        .populate('doctor', 'username _id status mobile email  address gender contact birthdate')
+        res.status(200).send({data:appointment})
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
 export const updateAppointment = async (req:any, res:any) => {
     try {
         const params = req.body
