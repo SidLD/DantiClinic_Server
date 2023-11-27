@@ -44,7 +44,7 @@ export const getPreRegister = async (req:any, res:any) => {
             mobile: string,
             role: string,
             status: string,
-        
+            PIN: string,
         } | null = await UserSchema.findOne({ _id: new mongoose.Types.ObjectId(params._id) })
         if(user){
             res.status(200).send({data:user})
