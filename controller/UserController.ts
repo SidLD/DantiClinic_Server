@@ -22,11 +22,11 @@ export const preRegister = async (req:any, res:any) => {
                 role: params.role,
                 username: params.username,
                 status: 'available',
-                PIN: randomPIN
+                PIN: `${randomPIN}`
             });
             try {
                 const data = await dbUser.save();
-                res.status(200).send({link: `${process.env.FRONT_URI}/register/${data._id}`})
+                res.status(200).send({link: `${process.env.FRONT_URI}/register/${data._id}`, PIN: `${randomPIN}`})
             } catch (error: any) {
                 res.status(400).send({message: error.message})
             }
