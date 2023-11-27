@@ -61,7 +61,13 @@ export const register = async (req: any, res: any) => {
     try {
         let params:IUser = req.body
         if(params?._id){
-            const user:IUser|any = UserSchema.findOne({_id: new mongoose.Types.ObjectId(params._id?.toString())});
+            const user:{
+                email: string,
+                mobile: string,
+                role: string,
+                status: string,
+                PIN: string,
+            } | null = await UserSchema.findOne({ _id: new mongoose.Types.ObjectId(params._id.toString()) })
             if(user?.PIN == params.PIN){
                 const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
                 const newUser :any = await UserSchema.findOneAndUpdate(
