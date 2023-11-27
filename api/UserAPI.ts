@@ -12,7 +12,7 @@ userAPI.get(`/${apiVersion}/doctor-info`, getDoctorIntro);
 userAPI.get(`/${apiVersion}/users`, verifyToken, getUsers);
 userAPI.get(`/${apiVersion}/user-data`, verifyToken, getUserData)
 userAPI.get(`/${apiVersion}/user-records`, verifyToken, getUserRecord)
-userAPI.post(`/${apiVersion}/register`, verifyToken ,register);
+userAPI.post(`/${apiVersion}/register` ,register);
 userAPI.put(`/${apiVersion}/users`, verifyToken ,updateUser);
 userAPI.put(`/${apiVersion}/user-password`, verifyToken ,updatePassword);
 userAPI.put(`/${apiVersion}/user-profile`, verifyToken , uploadProfile);

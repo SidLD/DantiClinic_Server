@@ -15,12 +15,14 @@ export const preRegister = async (req:any, res:any) => {
         if(email || mobile){
             res.status(401).send({message:"User Already Exist"})
         }else{
+            const randomPIN = ("0" + Math.floor(Math.random() * (9999 - 0 + 1)) + 0).substr(-4);
             const dbUser = new UserSchema({
                 email: params.email,
                 mobile: params.mobile,
                 role: params.role,
                 username: params.username,
-                status: 'available'
+                status: 'available',
+                PIN: randomPIN
             });
             try {
                 const data = await dbUser.save();
@@ -59,21 +61,26 @@ export const register = async (req: any, res: any) => {
     try {
         let params:IUser = req.body
         if(params?._id){
-            const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
+            const user:IUser|any = UserSchema.findOne({_id: new mongoose.Types.ObjectId(params._id?.toString())});
+            if(user?.PIN == params.PIN){
+                const hashedPassword = await bcrypt.hash(params.password.toString(), 10)
                 const newUser :any = await UserSchema.findOneAndUpdate(
-                    {_id: new mongoose.Types.ObjectId(params._id?.toString())},
-                    {email: params.email,
-                        address : params.address,
-                        age : params.age,
-                        password : hashedPassword,
-                        birthdate : params.birthdate,
-                        mobile : params.mobile,
-                        username : params.username,
-                        role : params.role,
-                        gender: params.gender,
-                        status: "available"}
+                        {_id: new mongoose.Types.ObjectId(params._id?.toString())},
+                        {email: params.email,
+                            address : params.address,
+                            age : params.age,
+                            password : hashedPassword,
+                            birthdate : params.birthdate,
+                            mobile : params.mobile,
+                            username : params.username,
+                            role : params.role,
+                            gender: params.gender,
+                            status: "available"}
                 )
-             res.status(200).send({newUser})
+                res.status(200).send({newUser})
+            }else{
+                res.status(400).send({message: 'Incorrect PIN'})
+            }
         }else{
             if(req.user.role === "admin"){
                 const email: null | any = await UserSchema.findOne({ email: params.email })

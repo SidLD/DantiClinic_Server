@@ -67,6 +67,7 @@ const userSchema = new Schema<IUser>(
         ref: "Appointment",
       }
     ],
+    PIN: String,
     profile: profileSchema,
   },
   {
