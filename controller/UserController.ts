@@ -165,18 +165,12 @@ export const getUsers = async (req:any, res:any) => {
         let params = req.query
         const users: IUser[] = await UserSchema.where({
             $or: [
-                {$and : [
-                    {role: params.role},
-                    {'username.firstName': params.search}
-                ]},
-                {$and : [
-                    {role: params.role},
-                    {'username.lastName': params.search}
-                ]},
-                {$and : [
-                    {role: params.role},
-                    {'username.email': params.search}
-                ]},
+                {'username.lastName': { $regex: '.*' + params.search + '.*' } },
+                {'username.firstName': { $regex: '.*' + params.search + '.*' } },
+                {'username.email':{ $regex: '.*' + params.search + '.*' } }
+            ],
+            $and: [
+                {role: params.role}
             ]
         })
         .sort(params.sort)

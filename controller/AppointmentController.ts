@@ -125,13 +125,13 @@ export const updateAppointment = async (req:any, res:any) => {
         const appointment: Iappointment | null = await AppointmentSchema.findById(new mongoose.Types.ObjectId(params._id))
         if( req.user.role == 'admin'){     
             const result = await AppointmentSchema.findOneAndUpdate(new mongoose.Types.ObjectId(params._id)
-            ,{date: new Date(params.date), title : params.title, status: 'forDoctor'})
+            ,{date: new Date(params.date), title : params.title, status: 'approve'})
             res.status(200).send({data:result})
         }else if(req.user.role == 'doctor'){
             const result = await AppointmentSchema.findOneAndUpdate(new mongoose.Types.ObjectId(params._id)
             ,{date: new Date(params.date), title : params.title, status: 'approve'})
             res.status(200).send({data:result})
-        }else if(req.user.role === 'patient' && appointment?.status === 'forAdmin'){
+        }else if(req.user.role === 'patient' && appointment?.status === 'pending'){
             const result = await AppointmentSchema.findOneAndUpdate(new mongoose.Types.ObjectId(params._id)
             ,{date: new Date(params.date), title : params.title})
             res.status(200).send({data:result})

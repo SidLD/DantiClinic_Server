@@ -43,7 +43,7 @@ export interface Iappointment {
     patient: IUser
     doctor: IUser
     date: Date
-    status: 'forAdmin' | 'forDoctor' | 'approve' | 'reject'
+    status: 'approve' | 'pending' | 'reject'
     findings?: {
         detail: string,
         date: Date
