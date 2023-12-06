@@ -88,10 +88,11 @@ export const register = async (req: any, res: any) => {
                 res.status(400).send({message: 'Incorrect PIN'})
             }
         }else{
-            if(req.user.role === "admin"){
-                const email: null | any = await UserSchema.findOne({ email: params.email })
-                const mobile:  null | any = await UserSchema.findOne({ mobile: params.mobile })
-                console.log(email)
+            console.log(params.role)
+            if(params.role === "doctor"){
+                const email: null | any = await UserSchema.findOne({ email: params.email, role: 'doctor' })
+                const mobile:  null | any = await UserSchema.findOne({ mobile: params.mobile, role: 'doctor' })
+                console.log("sdasdasd", email, mobile)
                 if(email || mobile){
                     res.status(400).send({message:"User Already Exist"})
                 }else{
@@ -105,7 +106,7 @@ export const register = async (req: any, res: any) => {
                         birthdate : params.birthdate,
                         mobile : params.mobile,
                         username : params.username,
-                        role : params.role,
+                        role : 'doctor',
                         specialty: params?.specialty || "",
                         status: "available"
                     });
