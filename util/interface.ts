@@ -15,7 +15,7 @@ export interface IUser {
     mobile: String,
     birthdate: String,
     age: Number,
-    gender: 'male' | 'female',
+    gender: string,
     address: {
         city: {
             code: string,

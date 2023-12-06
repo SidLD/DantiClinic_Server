@@ -33,10 +33,7 @@ const userSchema = new Schema<IUser>(
     },
     specialty: String,
     age: Number,
-    gender: {
-      type: String,
-      enum: ['male', 'female']
-    },
+    gender:String,
     address: {
       city: {
         code:String,
