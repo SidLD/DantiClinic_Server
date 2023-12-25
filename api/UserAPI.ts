@@ -1,12 +1,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import { login, preRegister, register , getPreRegister, getUsers, getUserData, updateUser, updatePassword, uploadProfile, getUserRecord, getDoctorIntro} from '../controller/UserController';
+import { login, preRegister, register , getPreRegister, getUsers, getUserData, updateUser, updatePassword, uploadProfile, getUserRecord, getDoctorIntro, generatePIN} from '../controller/UserController';
 import { verifyToken } from '../util/verify';
 dotenv.config()
 const userAPI = express()
 const apiVersion = process.env.API_VERSION;
 
 userAPI.post(`/${apiVersion}/pre-register`, preRegister);
+userAPI.post(`/${apiVersion}/user/pin`, verifyToken, generatePIN);
+
 userAPI.get(`/${apiVersion}/pre-register`, getPreRegister);
 userAPI.get(`/${apiVersion}/doctor-info`, getDoctorIntro);
 userAPI.get(`/${apiVersion}/users`, verifyToken, getUsers);

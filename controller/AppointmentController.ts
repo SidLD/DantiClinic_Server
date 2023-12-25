@@ -41,7 +41,6 @@ export const createAppointment = async (req:any, res:any) => {
 export const getAppointment = async (req:any, res:any) => {
     try {
         const params = req.query
-        
         if(req.user.role === 'patient'){
             const appointments: Array<Iappointment> = await AppointmentSchema.where({
                 $or: [
@@ -55,6 +54,7 @@ export const getAppointment = async (req:any, res:any) => {
                 ],
                 patient: new mongoose.Types.ObjectId(req.user.id)
             })
+            .collation({ locale: "en" })
             .sort(params.sort)
             .limit(params.limit)
             .populate('patient', 'username _id status mobile email')
@@ -74,6 +74,7 @@ export const getAppointment = async (req:any, res:any) => {
                 status: {$ne : 'complete'},
                 doctor: new mongoose.Types.ObjectId(req.user.id)
             })
+            .collation({ locale: "en" })
             .sort(params.sort)
             .limit(params.limit)
             .populate('patient', 'username _id status mobile email')
@@ -93,6 +94,7 @@ export const getAppointment = async (req:any, res:any) => {
                 ],
                 status: {$ne : 'complete'},
             })
+            .collation({ locale: "en" })
             .sort(params.sort)
             .limit(params.limit)
             .populate('patient', 'username _id status mobile email')

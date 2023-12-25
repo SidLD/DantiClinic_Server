@@ -36,6 +36,21 @@ export const preRegister = async (req:any, res:any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
+
+export const generatePIN = async (req:any, res:any) => {
+    try {
+        const randomPIN = ("0" + Math.floor(Math.random() * (9999 - 0 + 1)) + 0).substr(-4);
+        const insertPIN = await UserSchema.findOneAndUpdate(
+            {_id: new mongoose.Types.ObjectId(req.user.id)},
+            {PIN: `${randomPIN}`}
+        )
+        res.status(200).send({data: {email: insertPIN?.email, PIN:randomPIN}})
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"ERROR when generating PIN"})
+    }
+}
+
 export const getPreRegister = async (req:any, res:any) => {
     try {
         let params = req.query
@@ -222,9 +237,17 @@ export const updateUser = async (req: any, res: any) => {
 export const updatePassword = async (req: any, res: any) => {
     try {
         let params:any = req.body
-        const user:IUser| null = await UserSchema.findOne({_id : new mongoose.Types.ObjectId(req.user.id)})
-        const isMatch = await bcrypt.compare(params.currentPassword, `${user?.password.toString()}`)
-        if(isMatch){
+        console.log(params);
+        const user:IUser| null = await UserSchema.findOne(
+            {
+                $and: [
+                {_id : new mongoose.Types.ObjectId(req.user.id)},
+                {PIN: params.PIN}
+            ]}
+        )
+        console.log(new mongoose.Types.ObjectId(req.user.id), params.PIN);
+        
+        if(user){
             const hashedPassword = await bcrypt.hash(params.newPassword.toString(), 10)
             const result = await UserSchema.findOneAndUpdate({_id: new mongoose.Types.ObjectId(req.user.id)},
             {
@@ -232,7 +255,7 @@ export const updatePassword = async (req: any, res: any) => {
             })
             res.status(200).send({data:result})
         }else{
-            res.status(400).send({message:"Password Does not Match"})
+            res.status(400).send({message:"Account Does Not Exist"})
         }
     } catch (error: any) {
         console.log(error.message)
