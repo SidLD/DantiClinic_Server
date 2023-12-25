@@ -119,6 +119,24 @@ export const getOneAppointment = async (req: any, res: any) => {
         res.status(400).send({message:"Invalid Data or Email Already Taken"})
     }
 }
+
+export const getAppointmentForPDF = async (req: any, res: any) => {
+    try {
+        const params = req.query
+        const appointments: Array<Iappointment> = await AppointmentSchema.where({
+            patient: new mongoose.Types.ObjectId(params.patientId)
+        })
+        .populate('patient', 'username _id status mobile email address gender contact birthdate')
+        .populate('doctor', 'username _id status mobile email address gender contact birthdate')
+        res.status(200).send({data:{
+            user: appointments[0].patient,
+            appointments: appointments
+        }})
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Invalid Data or Email Already Taken"})
+    }
+}
 export const updateAppointment = async (req:any, res:any) => {
     try {
         const params = req.body
@@ -198,21 +216,35 @@ export const getRecords = async (req:any, res:any) => {
             .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
             res.status(200).send({data:users})
         }else{
-            const users: Array<IUser> = await UserSchema.find({
+            const tempUsers:Array<IUser> = await UserSchema.where({
                 $or: [
-                    {'username.firstName':   { '$regex' : params.search, '$options' : 'i' }},
-                    {'username.lastName':    { '$regex' : params.search, '$options' : 'i' }},
-                    {'username.email':       { '$regex' : params.search, '$options' : 'i' }},
-                    {'username.firstName':   { '$regex' : params.search, '$options' : 'i' }},
-                    {'username.lastName':    { '$regex' : params.search, '$options' : 'i' }},
-                    {'email':                { '$regex' : params.search, '$options' : 'i' }},
+                    {'username.firstName': 
+                        { '$regex' : params.search, '$options' : 'i' }
+                    },
+                    {'username.lastName': 
+                        { '$regex' : params.search, '$options' : 'i' }
+                    },
                 ],
-                role: 'patient',
+            })
+            const users: Array<Iappointment> = await AppointmentSchema.where({
+                date: {
+                    $gte: new Date(params.date?.from || new Date()+".000+00:00"),
+                    $lte: new Date(params.date?.to || new Date() + ".000+00:00")
+                },
+                patient: {
+                    $in: tempUsers.map(element => element._id)
+                }
             })
             .sort(params.sort)
             .limit(params.limit)
-            .select(['_id', 'username', 'role', 'email', 'mobile', 'status']) 
-            res.status(200).send({data:users})
+            .populate('patient', ['_id', 'username', 'role', 'email', 'mobile', 'status'])
+            let result:any = [];
+            users.forEach(element => {
+                if(!result.includes(element.patient)){
+                    result.push(element.patient)
+                }
+            })
+            res.status(200).send({data:result})
         }
     } catch (error: any) {
         console.log(error.message)
