@@ -228,7 +228,7 @@ export const getRecords = async (req:any, res:any) => {
                     },
                 ],
             })
-            if(params.date?.from && params.date?.to){
+            if(params.date){
                 const users: Array<Iappointment> = await AppointmentSchema.where({
                     date: {
                         $gte: new Date(params.date?.from +".000+00:00"),
@@ -267,7 +267,7 @@ export const getRecords = async (req:any, res:any) => {
             }
         }
     } catch (error: any) {
-        console.log(error)
+        console.log(error.message)
         res.status(400).send({message:"Invalid Data or Server Error"})
     }
 }
