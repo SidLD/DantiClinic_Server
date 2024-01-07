@@ -1,0 +1,23 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const verify_1 = require("../util/verify");
+const AppointmentController_1 = require("../controller/AppointmentController");
+dotenv_1.default.config();
+const appointmentAPI = (0, express_1.default)();
+const apiVersion = process.env.API_VERSION;
+appointmentAPI.post(`/${apiVersion}/appointment`, verify_1.verifyToken, AppointmentController_1.createAppointment);
+4;
+appointmentAPI.get(`/${apiVersion}/appointment`, verify_1.verifyToken, AppointmentController_1.getOneAppointment);
+appointmentAPI.put(`/${apiVersion}/appointment`, verify_1.verifyToken, AppointmentController_1.updateAppointment);
+appointmentAPI.put(`/${apiVersion}/appointment-complete`, verify_1.verifyToken, AppointmentController_1.completeAppointment);
+appointmentAPI.get(`/${apiVersion}/appointments`, verify_1.verifyToken, AppointmentController_1.getAppointment);
+appointmentAPI.get(`/${apiVersion}/appointments/pdf`, verify_1.verifyToken, AppointmentController_1.getAppointmentForPDF);
+appointmentAPI.delete(`/${apiVersion}/appointment`, verify_1.verifyToken, AppointmentController_1.deleteAppointment);
+appointmentAPI.put(`/${apiVersion}/appointment/reject`, verify_1.verifyToken, AppointmentController_1.rejectAppointment);
+appointmentAPI.get(`/${apiVersion}/records`, verify_1.verifyToken, AppointmentController_1.getRecords);
+exports.default = appointmentAPI;

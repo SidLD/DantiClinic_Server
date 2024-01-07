@@ -208,7 +208,7 @@ export const completeAppointment = async (req:any, res:any) => {
 }
 export const getRecords = async (req:any, res:any) => {
     try {
-        const params = req.query
+        const params = req.query;
         if(req.user.role == 'patient'){
             const users: Array<IUser> = await UserSchema.where({
                 _id: new mongoose.Types.ObjectId(req.user.id)
@@ -217,7 +217,7 @@ export const getRecords = async (req:any, res:any) => {
             .limit(params.limit)
             .select(['_id', 'username', 'role', 'email', 'mobile', 'status'])
             res.status(200).send({data:users})
-        }else{
+        }else{   
             const tempUsers:Array<IUser> = await UserSchema.where({
                 $or: [
                     {'username.firstName': 
@@ -228,28 +228,46 @@ export const getRecords = async (req:any, res:any) => {
                     },
                 ],
             })
-            const users: Array<Iappointment> = await AppointmentSchema.where({
-                date: {
-                    $gte: new Date(params.date?.from || new Date()+".000+00:00"),
-                    $lte: new Date(params.date?.to || new Date() + ".000+00:00")
-                },
-                patient: {
-                    $in: tempUsers.map(element => element._id)
-                }
-            })
-            .sort(params.sort)
-            .limit(params.limit)
-            .populate('patient', ['_id', 'username', 'role', 'email', 'mobile', 'status'])
-            let result:any = [];
-            users.forEach(element => {
-                if(!result.includes(element.patient)){
-                    result.push(element.patient)
-                }
-            })
-            res.status(200).send({data:result})
+            if(params.date?.from && params.date?.to){
+                const users: Array<Iappointment> = await AppointmentSchema.where({
+                    date: {
+                        $gte: new Date(params.date?.from +".000+00:00"),
+                        $lte: new Date(params.date?.to + ".000+00:00")
+                    },
+                    patient: {
+                        $in: tempUsers.map(element => element._id)
+                    }
+                })
+                .sort(params.sort)
+                .limit(params.limit)
+                .populate('patient', ['_id', 'username', 'role', 'email', 'mobile', 'status'])
+                let result:any = [];
+                users.forEach(element => {
+                    if(!result.includes(element.patient)){
+                        result.push(element.patient)
+                    }
+                })
+                res.status(200).send({data:result})
+            }else{
+                const users: Array<Iappointment> = await AppointmentSchema.where({
+                    patient: {
+                        $in: tempUsers.map(element => element._id)
+                    }
+                })
+                .sort(params.sort)
+                .limit(params.limit)
+                .populate('patient', ['_id', 'username', 'role', 'email', 'mobile', 'status'])
+                let result:any = [];
+                users.forEach(element => {
+                    if(!result.includes(element.patient)){
+                        result.push(element.patient)
+                    }
+                })
+                res.status(200).send({data:result})
+            }
         }
     } catch (error: any) {
-        console.log(error.message)
+        console.log(error)
         res.status(400).send({message:"Invalid Data or Server Error"})
     }
 }

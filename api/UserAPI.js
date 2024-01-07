@@ -1,0 +1,25 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const UserController_1 = require("../controller/UserController");
+const verify_1 = require("../util/verify");
+dotenv_1.default.config();
+const userAPI = (0, express_1.default)();
+const apiVersion = process.env.API_VERSION;
+userAPI.post(`/${apiVersion}/pre-register`, UserController_1.preRegister);
+userAPI.post(`/${apiVersion}/user/pin`, verify_1.verifyToken, UserController_1.generatePIN);
+userAPI.get(`/${apiVersion}/pre-register`, UserController_1.getPreRegister);
+userAPI.get(`/${apiVersion}/doctor-info`, UserController_1.getDoctorIntro);
+userAPI.get(`/${apiVersion}/users`, verify_1.verifyToken, UserController_1.getUsers);
+userAPI.get(`/${apiVersion}/user-data`, verify_1.verifyToken, UserController_1.getUserData);
+userAPI.get(`/${apiVersion}/user-records`, verify_1.verifyToken, UserController_1.getUserRecord);
+userAPI.post(`/${apiVersion}/register`, UserController_1.register);
+userAPI.put(`/${apiVersion}/users`, verify_1.verifyToken, UserController_1.updateUser);
+userAPI.put(`/${apiVersion}/user-password`, verify_1.verifyToken, UserController_1.updatePassword);
+userAPI.put(`/${apiVersion}/user-profile`, verify_1.verifyToken, UserController_1.uploadProfile);
+userAPI.post(`/${apiVersion}/login`, UserController_1.login);
+exports.default = userAPI;
