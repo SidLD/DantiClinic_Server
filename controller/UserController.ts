@@ -51,6 +51,24 @@ export const generatePIN = async (req:any, res:any) => {
     }
 }
 
+export const passwordPIN = async (req:any, res:any) => {
+    try { 
+        const randomPIN = ("0" + Math.floor(Math.random() * (9999 - 0 + 1)) + 0).substr(-4);
+        const insertPIN = await UserSchema.findOneAndUpdate(
+            {email: req.body.email},
+            {PIN: `${randomPIN}`}
+        )
+        if(insertPIN){
+            res.status(200).send({data: {email: insertPIN?.email, PIN:randomPIN}})
+        }else{
+            res.status(400).send({message:"User does not Exist"})
+        }
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"ERROR when generating PIN"})
+    }
+}
+
 export const getPreRegister = async (req:any, res:any) => {
     try {
         let params = req.query
@@ -253,6 +271,33 @@ export const updatePassword = async (req: any, res: any) => {
             {
                 password: hashedPassword
             })
+            res.status(200).send({data:result})
+        }else{
+            res.status(400).send({message:"Account Does Not Exist"})
+        }
+    } catch (error: any) {
+        console.log(error.message)
+        res.status(400).send({message:"Password Does not Match"})
+    }
+}
+
+export const emailPassword = async (req: any, res: any) => {
+    try {
+        let params:any = req.body
+        console.log(params);
+        const user:IUser| null = await UserSchema.findOne(
+            {
+                $and: [
+                {email : params.email},
+                {PIN: params.PIN}
+            ]}
+        )
+        if(user){
+            const hashedPassword = await bcrypt.hash(params.newPassword.toString(), 10)
+            const result = await UserSchema.findOneAndUpdate(
+                {email: req.body.email},
+                { password: hashedPassword}
+            )
             res.status(200).send({data:result})
         }else{
             res.status(400).send({message:"Account Does Not Exist"})
