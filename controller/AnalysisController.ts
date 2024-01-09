@@ -8,13 +8,13 @@ import AppointmentSchema from '../schema/AppointmentSchema'
 export const getCountAllStatus = async (req:any, res:any) => {
     try {
         const params = req.query
-        const approve = await AppointmentSchema.where({status: 'approved'}).count()
+        const approved = await AppointmentSchema.where({status: 'approved'}).count()
         const forAdmin = await AppointmentSchema.where({status: 'forAdmin'}).count()
         const forDoctor = await  AppointmentSchema.where({status: 'forDoctor'}).count()
         const complete = await AppointmentSchema.where({status: 'complete'}).count()
         const reject = await AppointmentSchema.where({status: 'reject'}).count()
         const data = {
-            approve, forAdmin, forDoctor, complete, reject
+            approved, forAdmin, forDoctor, complete, reject
         }
         res.status(200).send(data)
     } catch (error: any) {

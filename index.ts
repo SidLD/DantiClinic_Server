@@ -6,6 +6,7 @@ import userAPI from './api/UserAPI';
 import mongoose from 'mongoose';
 import appointmentAPI from './api/AppointmentAPI';
 import analysisAPI from './api/AnalysisAPI';
+import AppointmentSchema from './schema/AppointmentSchema';
 
 //For env File 
 dotenv.config();
@@ -17,7 +18,6 @@ const corsOptions = {
     origin: process.env.FRONT_URI // frontend URI (ReactJS)
 }
 app.use(cors(corsOptions));
-
 
 //START of API
 app.use(userAPI)

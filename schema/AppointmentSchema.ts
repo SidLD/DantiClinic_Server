@@ -26,7 +26,7 @@ const appointmentSchema = new Schema<Iappointment>(
     date: Date,
     status: {
       type: String,
-      enum: [ 'pending' , 'approve', 'reject']
+      enum: [ 'pending' , 'approved', 'reject']
     },
     findings: {
         detail: String,
